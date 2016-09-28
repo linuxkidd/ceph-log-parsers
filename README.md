@@ -4,6 +4,34 @@ Tools for parsing ceph logs to help with troubleshooting various issues.
 ## Tool Explanations:
 NOTE: I've shortened the sample outputs below with elipses for the sake of brevity.
 
+- iops_histo.sh
+Provide a 'ceph.log', this script will output a CSV file that can be graphed to understand the IOPs histogram for the time covered by the ceph.log.  Left column is thousand IOPs, right column is how many 'pgmap' entries fall into that thousand.
+
+###### Example:
+```
+# ./iops_histo.sh ceph.log > iops_histo.csv
+
+# cat iops_histo.csv
+0,628
+1,124
+2,1986
+3,8339
+4,4218
+5,3705
+6,3233
+7,2574
+8,2013
+9,1453
+10,890
+11,607
+12,413
+13,349
+14,287
+15,238
+16,252
+17,214
+18,173
+```
 
 - map_events_to_buckets.sh
 Provide a 'ceph.log' and the text file output of 'ceph osd tree' and this script will output a count of slow requests (local, subop and total),'failed', 'boot' and 'wrongly marked me down' entries mapped to the leaf / buckets to which they were reported against.
