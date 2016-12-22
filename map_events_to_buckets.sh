@@ -15,7 +15,7 @@ if [ ! -e $2 ]; then
 	echo "File $2 does not exist."
 fi
 
-counters="prim subop slow fail boot wrong"
+counters="prim subop rwlock slow fail boot wrong"
 
 declare -A files
 declare -A bucket_counts
@@ -29,6 +29,8 @@ echo -n "Searching for... slow" >&2
 awk '/slow request / { if ( $NF !~ /,/) { print $3}}' $1 | sort -n | uniq -c > ${files['prim']}
 echo -n ", subops" >&2
 awk '/slow request / { if ( $NF ~ /,/ ) { split($NF,a,","); for (i in a) { printf("osd.%s\n", a[i]) } }}' $1 | sort -n | uniq -c > ${files['subop']}
+echo -n ", rwlock" >&2
+grep 'slow request ' $1 | grep 'currently waiting for rw locks' | awk '{print $3}' | sort -n | uniq -c > ${files['rwlock']}
 
 ## Generate list of failed,booted and wrongly marked me down OSDs 
 echo -n ", failed" >&2
@@ -45,7 +47,7 @@ currbuckets=()
 inhost=0
 depth_count=0
 
-echo "buckets...,slow primary,slow subop, total slow,failed,boot,wrongly down"
+echo "buckets...,slow primary,slow subop,rwlock, total slow,failed,boot,wrongly down"
 
 while read line; do  ## Read in line by line of the OSD Tree
 	thirdcol=$(echo $line | awk '{print $3}')  ## Get the 3rd Column
