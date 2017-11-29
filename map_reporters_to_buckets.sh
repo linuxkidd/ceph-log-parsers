@@ -91,7 +91,8 @@ while read line; do
 				fi
 			}
 		fi
-		declare "${thirdcol}=${forthcol}"
+		thirdcolb=$(echo $thirdcol | sed -e 's/[^0-9a-zA-Z_]/_/g')
+		declare "${thirdcolb}=${forthcol}"
 	fi
 done < $2
 highest_bucket=${#buckets[*]}
