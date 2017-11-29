@@ -27,7 +27,7 @@ depth_count=0
 bucket_counts=()
 
 while read line; do
-	thirdcol=$(echo $line | awk '{print $3}')
+	thirdcol=$(echo $line | awk '{print $3}' | sed -e 's/[^0-9a-zA-Z_]/_/g')
 	forthcol=$(echo $line | awk '{print $4}')
 	if [ $thirdcol == "Type" -o $thirdcol == "TYPE" ]; then
 		continue
@@ -69,8 +69,7 @@ while read line; do
 				fi
 			}
 		fi
-		thirdcolb=$(echo $thirdcol | sed -e 's/[^0-9a-zA-Z_]/_/g')
-		declare "${thirdcolb}=${forthcol}"
+		declare "${thirdcol}=${forthcol}"
 	fi
 done < $2
 highest_bucket=${#buckets[*]}
