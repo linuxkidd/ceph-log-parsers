@@ -3,6 +3,26 @@ Tools for parsing ceph logs to help with troubleshooting various issues.
 
 ## Tool Explanations:
 NOTE: I've shortened the sample outputs below with elipses for the sake of brevity.
+- rgw_req_timing.sh
+Provide the `ceph.log` and this script will provide an output showing the time between the start and stop of every deep-scrub.  The output format is csv, with the first column being the deep-scrub time in seconds, second column being the 'deep-scrub' line which stopped the timer.  The start/stop lines are keyed on the pg.id.  At the end of the processing, a Min,Avg,Max output is also provided, along with the 'deep-scrub' completed line for the Min and Max processing times.
+
+###### Example:
+```
+# ./deep-scrub_timing.sh /var/log/ceph/ceph.log > ~/deep-scrub_timings.csv
+# cat ~/deep-scrub_timings.csv
+
+0.0155821,2018-01-16 03:44:06.068707 osd.764 10.129.152.42:6851/3796002 4467 : cluster [INF] 29.243 deep-scrub ok
+0.0110428,2018-01-16 03:44:11.223353 osd.447 10.129.152.33:6851/3784262 4900 : cluster [INF] 29.5ad deep-scrub ok
+0.0009799,2018-01-16 03:45:59.345522 osd.927 10.129.152.50:6836/2106288 6823 : cluster [INF] 20.e9 deep-scrub ok
+0.002249,2018-01-16 03:46:04.488109 osd.284 10.129.152.30:6848/3526172 4303 : cluster [INF] 18.2f deep-scrub ok
+0.000980854,2018-01-16 03:47:26.628785 osd.540 10.129.152.40:6824/4041304 5864 : cluster [INF] 23.238 deep-scrub ok
+0.00139022,2018-01-16 03:47:27.402259 osd.684 10.129.152.42:6818/3777592 5148 : cluster [INF] 17.26d deep-scrub ok
+...
+Min,Avg,Max
+0.000564098,248.451,846.795
+Min Req: 2018-01-16 11:28:00.908817 osd.4 10.129.152.25:6837/3496196 5784 : cluster [INF] 48.32 deep-scrub ok
+Max Req: 2018-01-17 01:13:12.793967 osd.131 10.129.152.23:6814/3605203 3452 : cluster [INF] 30.7f7 deep-scrub ok
+```
 
 - iops_histo.sh
 Provide a 'ceph.log', this script will output a CSV file that can be graphed to understand the IOPs histogram for the time covered by the ceph.log.  Left column is thousand IOPs, right column is how many 'pgmap' entries fall into that thousand.
@@ -10,8 +30,8 @@ Provide a 'ceph.log', this script will output a CSV file that can be graphed to 
 ###### Example:
 ```
 # ./iops_histo.sh ceph.log > iops_histo.csv
-
 # cat iops_histo.csv
+
 0,628
 1,124
 2,1986
@@ -43,6 +63,7 @@ Provide a 'ceph.log' and the text file output of 'ceph osd tree' and this script
 Searching for... slow, subops, failed, boot, wrongly marked down
 
 # cat events.csv
+
 buckets...,slow primary,slow subop, total slow,failed,boot,wrongly down
 default,rack1,ceph-storage-003,osd.0,775,398,1173,174,174,176
 default,rack1,ceph-storage-003,osd.6,725,171,896,175,176,176
@@ -113,51 +134,27 @@ default,719087,719087,
 
 ```
 
-- map_slow_requests_to_buckets.sh
-Provide the 'ceph.log' and a text file output of 'ceph osd tree' and this script will output a raw count of slow requests (combined primary and subops in one counter) mapped to the leaf / buckets to which they were reported against.  This script was created prior to the 'events' script, and is therefore left available but is supersceded by the 'events' script.
+- rgw_req_timing.sh
+Provide the `radosgw.log` and this script will provide an output showing the time between the start and return of every RGW request.  The output format is csv, with the first column being the request time in seconds, second column being the 'req done' line which stopped the timer.  The start/stop lines are keyed on the request ID assigned by RGW.  At the end of the processing, a Min,Avg,Max output is also provided, along with the 'req done' line for the Min and Max request times.
 
 ###### Example:
 ```
-# ceph osd tree > ceph_osd_tree.txt
-# ./map_slow_requests_to_buckets.sh ceph.log ceph_osd_tree.txt > slow.csv
-# cat slow.csv
+# ./rgw_req_timing.sh /var/log/ceph/ceph-rgw-myhostname.log > ~/req_timings.csv
+# cat ~/req_timings.csv
 
-default,rack1,ceph-storage-003,osd.0,1173
-default,rack1,ceph-storage-003,osd.6,896
-default,rack1,ceph-storage-003,osd.10,970
-default,rack1,ceph-storage-003,osd.15,1407
-default,rack1,ceph-storage-003,osd.20,1441
-default,rack1,ceph-storage-003,osd.25,821
+0.187219,2018-01-16 03:47:01.622215 2af878cd7700  1 ====== req done req=0x2af878cd1710 op status=0 http_status=200 ======
+0.051897,2018-01-16 03:47:01.989993 2af8a132d700  1 ====== req done req=0x2af8a1327710 op status=0 http_status=200 ======
+0.181928,2018-01-16 03:47:02.045216 2af878cd7700  1 ====== req done req=0x2af878cd1710 op status=0 http_status=200 ======
+0.052496,2018-01-16 03:47:02.047359 2af8a5335700  1 ====== req done req=0x2af8a532f710 op status=0 http_status=200 ======
+0.279186,2018-01-16 03:47:02.207797 2af87e7e5700  1 ====== req done req=0x2af87e7df710 op status=0 http_status=200 ======
+0.16574,2018-01-16 03:47:02.447974 2af878cd7700  1 ====== req done req=0x2af878cd1710 op status=0 http_status=200 ======
+0.29716,2018-01-16 03:47:02.712994 2af87e7e5700  1 ====== req done req=0x2af87e7df710 op status=0 http_status=200 ======
+0.186362,2018-01-16 03:47:02.828799 2af878cd7700  1 ====== req done req=0x2af878cd1710 op status=0 http_status=200 ======
+0.236106,2018-01-16 03:47:02.931637 2af88ab00700  1 ====== req done req=0x2af88aafa710 op status=0 http_status=200 ======
+0.0516322,2018-01-16 03:47:02.952181 2af87f0e7700  1 ====== req done req=0x2af87f0e1710 op status=0 http_status=200 ======
 ...
-default,rack1,ceph-storage-003,10673
-default,rack1,ceph-storage-004,osd.423,1180
-default,rack1,ceph-storage-004,osd.425,1399
-default,rack1,ceph-storage-004,osd.427,1579
-default,rack1,ceph-storage-004,osd.429,1042
-...
-default,rack1,ceph-storage-004,14047
-....
-default,rack1,170350
-default,rack2,ceph-storage-017,0
-default,rack2,ceph-storage-020,osd.149,1293
-default,rack2,ceph-storage-020,osd.153,1053
-default,rack2,ceph-storage-020,osd.158,1594
-default,rack2,ceph-storage-020,osd.163,1237
-...
-default,rack2,ceph-storage-020,11021
-default,rack2,ceph-storage-021,osd.150,730
-default,rack2,ceph-storage-021,osd.154,1558
-default,rack2,ceph-storage-021,osd.159,0
-default,rack2,ceph-storage-021,osd.164,399
-default,rack2,ceph-storage-021,osd.169,1016
-...
-default,rack2,ceph-storage-021,8559
-...
-default,rack2,184810
-...
-default,rack3,212911
-default,568071
+Min,Avg,Max
+0.000127792,0.73737,1200.11
+Min Req: 2018-01-16 15:46:07.383273 2af89230f700  1 ====== req done req=0x2af892309710 op status=0 http_status=400 ======
+Max Req: 2018-01-16 12:09:07.163211 2af89130d700  1 ====== req done req=0x2af891307710 op status=0 http_status=200 ======
 ```
-
-
-
