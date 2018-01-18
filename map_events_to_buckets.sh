@@ -50,7 +50,7 @@ depth_count=0
 echo "buckets...,slow primary,slow subop,rwlock, total slow,failed,boot,wrongly down"
 
 while read line; do  ## Read in line by line of the OSD Tree
-	thirdcol=$(echo $line | awk '{print $3}'| sed -e 's/[^0-9a-zA-Z_]/_/g')  ## Get the 3rd Column
+	thirdcol=$(echo $line | awk '{print $3}')  ## Get the 3rd Column
 	forthcol=$(echo $line | awk '{print $4}')  ## Get the 4th Column
 	if [ $(echo $thirdcol | grep -ic "^type$") -gt 0 ]; then  ## If the 3rd Column == type (in any case), then it's a header, skip it
 		continue
