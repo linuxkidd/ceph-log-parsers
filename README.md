@@ -3,8 +3,8 @@ Tools for parsing ceph logs to help with troubleshooting various issues.
 
 ## Tool Explanations:
 NOTE: I've shortened the sample outputs below with elipses for the sake of brevity.
-- deep-scrub_timing.sh
-Provide the `ceph.log` and this script will provide an output showing the time between the start and stop of every deep-scrub.  The output format is csv, with the first column being the deep-scrub time in seconds, second column being the 'deep-scrub' line which stopped the timer.  The start/stop lines are keyed on the pg.id.  At the end of the processing, a Min,Avg,Max output is also provided, along with the 'deep-scrub' completed line for the Min and Max processing times.
+#### deep-scrub_timing.sh
+- Provide the `ceph.log` and this script will provide an output showing the time between the start and stop of every deep-scrub.  The output format is csv, with the first column being the deep-scrub time in seconds, second column being the 'deep-scrub' line which stopped the timer.  The start/stop lines are keyed on the pg.id.  At the end of the processing, a Min,Avg,Max output is also provided, along with the 'deep-scrub' completed line for the Min and Max processing times.
 
 ###### Example:
 ```
@@ -24,8 +24,8 @@ Min Req: 2018-01-16 11:28:00.908817 osd.4 10.129.152.25:6837/3496196 5784 : clus
 Max Req: 2018-01-17 01:13:12.793967 osd.131 10.129.152.23:6814/3605203 3452 : cluster [INF] 30.7f7 deep-scrub ok
 ```
 
-- iops_histo.sh
-Provide a 'ceph.log', this script will output a CSV file that can be graphed to understand the IOPs histogram for the time covered by the ceph.log.  Left column is thousand IOPs, right column is how many 'pgmap' entries fall into that thousand.
+#### iops_histo.sh
+- Provide a 'ceph.log', this script will output a CSV file that can be graphed to understand the IOPs histogram for the time covered by the ceph.log.  Left column is thousand IOPs, right column is how many 'pgmap' entries fall into that thousand.
 
 ###### Example:
 ```
@@ -53,8 +53,8 @@ Provide a 'ceph.log', this script will output a CSV file that can be graphed to 
 18,173
 ```
 
-- map_events_to_buckets.sh
-Provide a 'ceph.log' and the text file output of 'ceph osd tree' and this script will output a count of slow requests (local, subop and total),'failed', 'boot' and 'wrongly marked me down' entries mapped to the leaf / buckets to which they were reported against.
+#### map_events_to_buckets.sh
+- Provide a 'ceph.log' and the text file output of 'ceph osd tree' and this script will output a count of slow requests (local, subop and total),'failed', 'boot' and 'wrongly marked me down' entries mapped to the leaf / buckets to which they were reported against.
 
 ###### Example:
 ```
@@ -97,8 +97,8 @@ default,rack3,154202,58709,212911,2357,2357,2365,
 default,338162,229909,568071,27912,27946,28072,
 ```
 
-- map_reporters_to_buckets.sh
-Provide with a ceph-mon.log and text output file from 'ceph osd tree' and this script will generate a mapping of 'reported failed' (reported and reporters) counts as a result.
+#### map_reporters_to_buckets.sh
+- Provide with a ceph-mon.log and text output file from 'ceph osd tree' and this script will generate a mapping of 'reported failed' (reported and reporters) counts as a result.
 
 ```
 # ceph osd tree > ceph_osd_tree.txt
@@ -134,8 +134,8 @@ default,719087,719087,
 
 ```
 
-- rgw_req_timing.sh
-Provide the `radosgw.log` and this script will provide an output showing the time between the start and return of every RGW request.  The output format is csv, with the first column being the request time in seconds, second column being the 'req done' line which stopped the timer.  The start/stop lines are keyed on the request ID assigned by RGW.  At the end of the processing, a Min,Avg,Max output is also provided, along with the 'req done' line for the Min and Max request times.
+#### rgw_req_timing.sh
+- Provide the `radosgw.log` and this script will provide an output showing the time between the start and return of every RGW request.  The output format is csv, with the first column being the request time in seconds, second column being the 'req done' line which stopped the timer.  The start/stop lines are keyed on the request ID assigned by RGW.  At the end of the processing, a Min,Avg,Max output is also provided, along with the 'req done' line for the Min and Max request times.
 
 ###### Example:
 ```
