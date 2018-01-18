@@ -1,5 +1,16 @@
 #!/bin/bash
 
+if [ -z $1 ]; then
+	echo
+	echo "Usage: $(basename $0) <ceph.log>"
+	echo
+	exit 1
+fi
+
+if [ ! -e $1 ]; then
+	echo "File $1 does not exist."
+fi
+
 awk 'BEGIN {
    mymin=999
    mymax=0
