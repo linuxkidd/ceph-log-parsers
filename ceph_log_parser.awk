@@ -2,9 +2,9 @@
 
 ###
 #
-# Pipe ceph.log into the script and redirect output to a CSV
+# Run with ceph.log and redirect output to a CSV
 # 
-# cat ceph.log | ceph_log_parser.awk > ceph-log-parser.csv
+# ./ceph_log_parser.awk ceph.log > ceph-log-parser.csv
 #
 # * For items which are average, these are summed and averaged over the measurement interval ( 10 minutes )
 #   The measurement is reported at the beginning of the interval measurement period
