@@ -487,8 +487,7 @@ END {
       osd=OSDS[osdindex]
       split(OSDS[osdindex],osdparts,",")
       osd=osdparts[length(osdparts)]
-    }
-    if(osdtree != "") {
+
       printf("%s,",osdpaths[osd])
       split(osdpaths[osd],pathjunk,",")
       pathdepth=length(pathjunk)
@@ -511,7 +510,26 @@ END {
     }
     printf("\n")
   }
-
+  ## Begin outputting OSDs which were not in the OSD tree
+  if(osdtree != "") {
+    delete OSDS
+    for (OSD in OSDEVENT) {
+      gsub(/^osd\./,"",OSD)
+      OSDS[OSD]=OSD
+    }
+    osdcount=asort(OSDS)
+    for (osdindex=1; osdindex<=osdcount; osdindex++) {
+      osd="osd."OSDS[osdindex]
+      if(osdpaths[osd] == "") {
+        for(pathindex=1;pathindex<maxpathdepth;pathindex++)
+          printf(",")
+        printf("%s",osd)
+        for (i = 1; i<= o; i++ )
+          printf(",%s",OSDEVENT[osd][OHDR[i]])
+        printf("\n")
+      }
+    }
+  }
   ## Begin outputting the OSD Bucket summary chart
   if(bucketsummary != "" && osdtree != "") {
     buckets=asorti(BUCKETSUMMARY,BKS)
