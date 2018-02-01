@@ -114,8 +114,10 @@ Pool ID,Deep-Scrub: Average,Deep-Scrub: Count,Deep-Scrub: Max,Deep-Scrub: Min,De
 12,0.119071,2694,27.8345,0.00160193,320.777,3,,3,,,,,,,,,3
 13,0.130721,3,0.267788,0.0144391,0.392163,,,,,,,,,,,,
 ```
-
-
+###### Example screenshots from Spreadsheet view:
+![Time Histogram](https://raw.githubusercontent.com/linuxkidd/ceph-log-parsers/master/images/Histogram.png)
+![OSD Chart](https://raw.githubusercontent.com/linuxkidd/ceph-log-parsers/master/images/OSDs.png)
+![Pool Chart](https://raw.githubusercontent.com/linuxkidd/ceph-log-parsers/master/images/Pools.png)
 
 #### deep-scrub_timing.awk
 - Provide the `ceph.log` and this script will provide an output showing the time between the start and stop of every deep-scrub.  The output format is csv, with the first column being the deep-scrub time in seconds, second column being the 'deep-scrub' line which stopped the timer.  The start/stop lines are keyed on the pg.id.  At the end of the processing, a Min,Avg,Max output is also provided, along with the 'deep-scrub' completed line for the Min and Max processing times.
