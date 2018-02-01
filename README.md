@@ -117,12 +117,12 @@ Pool ID,Deep-Scrub: Average,Deep-Scrub: Count,Deep-Scrub: Max,Deep-Scrub: Min,De
 
 
 
-#### deep-scrub_timing.sh
+#### deep-scrub_timing.awk
 - Provide the `ceph.log` and this script will provide an output showing the time between the start and stop of every deep-scrub.  The output format is csv, with the first column being the deep-scrub time in seconds, second column being the 'deep-scrub' line which stopped the timer.  The start/stop lines are keyed on the pg.id.  At the end of the processing, a Min,Avg,Max output is also provided, along with the 'deep-scrub' completed line for the Min and Max processing times.
 
 ###### Example:
 ```
-# ./deep-scrub_timing.sh /var/log/ceph/ceph.log > ~/deep-scrub_timings.csv
+# ./deep-scrub_timing.awk /var/log/ceph/ceph.log > ~/deep-scrub_timings.csv
 # cat ~/deep-scrub_timings.csv
 
 0.0155821,2018-01-16 03:44:06.068707 osd.764 10.129.152.42:6851/3796002 4467 : cluster [INF] 29.243 deep-scrub ok
