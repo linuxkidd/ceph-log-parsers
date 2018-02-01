@@ -115,13 +115,13 @@ Pool ID,Deep-Scrub: Average,Deep-Scrub: Count,Deep-Scrub: Max,Deep-Scrub: Min,De
 13,0.130721,3,0.267788,0.0144391,0.392163,,,,,,,,,,,,
 ```
 ###### Example screenshots from Spreadsheet view:
-####### Time histogram ( 10 minute interval )
+###### Time histogram ( 10 minute interval )
 ![Time Histogram](https://raw.githubusercontent.com/linuxkidd/ceph-log-parsers/master/images/Histogram.png)
 
-####### OSD Chart with OSD Tree input
+###### OSD Chart with OSD Tree input
 ![OSD Chart](https://raw.githubusercontent.com/linuxkidd/ceph-log-parsers/master/images/OSDs.png)
 
-####### Pool chart showing scrub and slow request counters
+###### Pool chart showing scrub and slow request counters
 ![Pool Chart](https://raw.githubusercontent.com/linuxkidd/ceph-log-parsers/master/images/Pools.png)
 
 #### deep-scrub_timing.awk
