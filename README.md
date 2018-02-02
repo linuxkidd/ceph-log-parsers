@@ -47,7 +47,7 @@ NOTE: I've shortened the sample outputs below with elipses for the sake of brevi
 
 ###### Example:
 ```
-# ./ceph_log_parser.awk -v osdtree=ceph_osd_tree.txt -v timeinterval=60 -v bucketsummary=1 ceph.log > ~/ceph-log-parsed.csv
+# ./ceph_log_parser.awk -v osdtree=ceph_osd_tree.txt -v timeinterval=10 -v bucketsummary=1 ceph.log > ~/ceph-log-parsed.csv
 # cat ~/ceph-log-parsed.csv
 
 DateTime,Deep-Scrub: OK,Deep-Scrub: Starts,IO: Client Avg IOPs,IO: Client Avg Read MB/s,IO: Client Avg Write MB/s,IO: Recovery Avg MB/s,OSD Boot,OSD Down: No PG stats,OSD Down: Reported Failed,OSD Out,
