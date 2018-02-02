@@ -273,7 +273,7 @@ BEGIN {
         myeventname="IO: Recovery Avg MB/s"
         myeventcount="RecoveryCount"
         split(mylineparts[linepartindex],reclineparts," ")
-        reclineparts[1]=toMB(reclineparts[1],reclineparts[2])
+        myeventadd=toMB(reclineparts[1],reclineparts[2])
         EVENTCOUNT[MYDTSTAMP][myeventname]=sprintf("%0.2f",((EVENTCOUNT[MYDTSTAMP][myeventname]*EVENTCOUNT[MYDTSTAMP][myeventcount])+myeventadd)/(EVENTCOUNT[MYDTSTAMP][myeventcount]+1))
         EVENTCOUNT[MYDTSTAMP][myeventcount]++
         EVENTHEADERS[myeventname]=1
