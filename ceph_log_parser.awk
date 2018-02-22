@@ -568,9 +568,12 @@ END {
   for(pindex=1;pindex<=poolcount;pindex++) {
     printf("%s",poolids[pindex])
     for(phdrindex=1;phdrindex<=phdrcount;phdrindex++) {
-      if(PHDR[phdrindex]=="Deep-Scrub: Average")
-        printf(",%0.6f",POOLEVENT[poolids[pindex]]["Deep-Scrub: Total"]/POOLEVENT[poolids[pindex]]["Deep-Scrub: Count"])
-      else
+      if(PHDR[phdrindex]=="Deep-Scrub: Average") {
+        if(POOLEVENT[poolids[pindex]]["Deep-Scrub: Count"])
+          printf(",%0.6f",POOLEVENT[poolids[pindex]]["Deep-Scrub: Total"]/POOLEVENT[poolids[pindex]]["Deep-Scrub: Count"])
+        else
+          printf(",")
+      } else
         printf(",%s",POOLEVENT[poolids[pindex]][PHDR[phdrindex]])
     }
     printf("\n")
