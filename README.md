@@ -13,6 +13,7 @@ NOTE: I've shortened the sample outputs below with elipses for the sake of brevi
 ```
 
  Available options:
+
       -v osdtree=ceph_osd_tree.txt
           If provided, the osd output portion will be output with its branch path in the crushmap
 
