@@ -13,7 +13,6 @@ NOTE: I've shortened the sample outputs below with elipses for the sake of brevi
 ```
 
  Available options:
-
       -v osdtree=ceph_osd_tree.txt
           If provided, the osd output portion will be output with its branch path in the crushmap
 
@@ -23,9 +22,16 @@ NOTE: I've shortened the sample outputs below with elipses for the sake of brevi
       -v bucketsummary=1
           If provided, provides an output below the OSD data summarizing the OSD counts for each 
           successive bucket branch above the OSD ( example: host, rack, row, root )
+          Default is 1 if 'osdtree' is defined.
+
+      -v osdhisto=1
+          Provides a column per OSD in the time histogram showing initial 'slow request' entries 
+          incurred by that OSD during the time interval.
+          Default is disabled because this can make VERY wide spreadsheets
 
       NOTE: These options MUST be specified **BEFORE** the ceph.log file, otherwise they will be
             ignored
+
 
  * For items which are average, these are summed and averaged over the measurement interval
    The measurement is reported at the beginning of the interval measurement period

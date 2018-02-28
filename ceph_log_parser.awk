@@ -19,6 +19,12 @@
 ##      -v bucketsummary=1
 ##          If provided, provides an output below the OSD data summarizing the OSD counts for each 
 ##          successive bucket branch above the OSD ( example: host, rack, row, root )
+##          Default is 1 if 'osdtree' is defined.
+##
+##      -v osdhisto=1
+##          Provides a column per OSD in the time histogram showing initial 'slow request' entries 
+##          incurred by that OSD during the time interval.
+##          Default is disabled because this can make VERY wide spreadsheets
 ##
 ##      NOTE: These options MUST be specified **BEFORE** the ceph.log file, otherwise they will be
 ##            ignored
@@ -120,6 +126,23 @@ function histototal(myevent,myvalue) {
   EVENTTOTAL[myevent]+=myvalue
 }
 
+function osdhistoevent(mykey,myevent,myfunc,myvalue) {
+  if(osdhisto!="") {
+    OSDEVENTHEADERS[myevent]=1
+    if(myfunc=="sum")
+      OSDEVENTCOUNT[mykey][myevent]+=myvalue
+    else if(myfunc=="set")
+      OSDEVENTCOUNT[mykey][myevent]=myvalue
+    else if(myfunc=="inc")
+      OSDEVENTCOUNT[mykey][myevent]++
+  }
+}
+
+function osdhistototal(myevent,myvalue) {
+  if(osdhisto!="")
+    OSDEVENTTOTAL[myevent]+=myvalue
+}
+
 function osdevent(mykey,myevent,myfunc,myvalue) {
   OSDHEADERS[myevent]=1
   if(myfunc=="sum")
@@ -163,9 +186,12 @@ function mydtstamp(mydt) {
 }
 
 BEGIN {
-  if( timeinterval=="" )
+  if(timeinterval=="")
     timeinterval=10
+
   if(osdtree != "") {
+    if(bucketsummary=="")
+      bucketsummary==1
     maxpathdepth=0
     currentdepth=0
     wasinhost=0
@@ -336,12 +362,18 @@ BEGIN {
     split(opparts[2],pgid,".")
   else if (opparts[9] ~ /^[0-9]*\.[0-9a-f]*$/)
     split(opparts[9],pgid,".")
-
+ 
   if ($0 ~ /subops from/) {
     split($NF,subosds,",")
     for (subosd in subosds) {
       subosd="osd."subosd
-      myeventstring="Slow SubOp,Slow Total"
+      if($11 < 60) {
+        myeventstring="Slow SubOp,Slow Total"
+        osdhistoevent(MYDTSTAMP,subosd,"inc")
+        osdhistototal(subosd,"inc")
+      } else {
+        myeventstring="Slow Relog SubOp,Slow Relog Total"
+      }
       split(myeventstring,myevents,",")
       for(myevent in myevents) {
         histototal(myevents[myevent],1)
@@ -354,7 +386,13 @@ BEGIN {
   } else {
     MYTYPE=$0
     gsub(/^.* currently /,"Slow Primary: ",MYTYPE)
-    myeventstring="Slow Primary,Slow Total,"MYTYPE
+    if($11 < 60) {
+      myeventstring="Slow Primary,Slow Total,"MYTYPE
+      osdhistoevent(MYDTSTAMP,$3,"inc")
+      osdhistototal($3,"inc")
+    } else {
+      myeventstring="Slow Relog Primary,Slow Relog Total"
+    }
     split(myeventstring,myevents,",")
     for(myevent in myevents) {
       histoevent(MYDTSTAMP,myevents[myevent],"inc")
@@ -432,9 +470,15 @@ END {
   ## Begin outputting the histogram chart
   printf("DateTime")
   n=asorti(EVENTHEADERS)
-  for (i = 1; i<= n; i++ ) {
+  if(osdhisto!="")
+    osdn=asorti(OSDEVENTHEADERS)
+  for (i = 1; i<= n; i++ )
     printf(",%s",EVENTHEADERS[i])
+  if(osdhisto!="") {
+    for (i = 1; i<= osdn; i++)
+      printf(",%s",OSDEVENTHEADERS[i])
   }
+
   printf("\n")
 
   dtcount=asorti(EVENTCOUNT,DTS)
@@ -442,8 +486,12 @@ END {
   for (dtindex =1; dtindex <= dtcount; dtindex++) {
     DT=DTS[dtindex]
     printf("%s:00", DT)
-    for (i = 1; i<= n; i++ ) {
+    for (i = 1; i<= n; i++ )
       printf(",%s",EVENTCOUNT[DT][EVENTHEADERS[i]])
+    if(osdhisto!="") {
+      # add-on the per OSD histo columns
+      for (i = 1; i<= osdn; i++ )
+        printf(",%s",OSDEVENTCOUNT[DT][OSDEVENTHEADERS[i]])
     }
     printf("\n")
   }
@@ -452,6 +500,10 @@ END {
   printf("Totals")
   for (i = 1; i<= n; i++ )
     printf(",%s",EVENTTOTAL[EVENTHEADERS[i]])
+  if(osdhisto!="") {
+    for (i = 1; i<= osdn; i++ )
+      printf(",%s",OSDEVENTTOTAL[OSDEVENTHEADERS[i]])
+  }
 
   printf("\n")
   printf("\n")
@@ -539,8 +591,12 @@ END {
       junklen=length(bucketjunk)
       for(i=junklen; i< maxpathdepth; i++)
         printf(",")
-      for (i = 1; i<= o; i++ )
-        printf(",%s",BUCKETSUMMARY[BKS[bindex]][OHDR[i]])
+      for (i = 1; i<= o; i++ ) {
+        if(BUCKETSUMMARY[BKS[bindex]][OHDR[i]]>0)
+          printf(",%s",BUCKETSUMMARY[BKS[bindex]][OHDR[i]])
+        else
+          printf(",")
+      }
       printf("\n")
     }
   } else {
@@ -568,9 +624,12 @@ END {
   for(pindex=1;pindex<=poolcount;pindex++) {
     printf("%s",poolids[pindex])
     for(phdrindex=1;phdrindex<=phdrcount;phdrindex++) {
-      if(PHDR[phdrindex]=="Deep-Scrub: Average")
-        printf(",%0.6f",POOLEVENT[poolids[pindex]]["Deep-Scrub: Total"]/POOLEVENT[poolids[pindex]]["Deep-Scrub: Count"])
-      else
+      if(PHDR[phdrindex]=="Deep-Scrub: Average") {
+        if(POOLEVENT[poolids[pindex]]["Deep-Scrub: Count"])
+          printf(",%0.6f",POOLEVENT[poolids[pindex]]["Deep-Scrub: Total"]/POOLEVENT[poolids[pindex]]["Deep-Scrub: Count"])
+        else
+          printf(",")
+      } else
         printf(",%s",POOLEVENT[poolids[pindex]][PHDR[phdrindex]])
     }
     printf("\n")
