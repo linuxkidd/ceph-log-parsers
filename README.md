@@ -43,11 +43,15 @@ NOTE: I've shortened the sample outputs below with elipses for the sake of brevi
    e.g. PG: active for 03:30 to 03:40 - If a pgmap is found at 03:39:59, that will be the one reported for
         the 03:30 line
 
- * For items like the Slow requests, the count of those entries is summed during the 10 minute period and reported
+ * For items like the Slow requests, the count of those entries is summed during the measured period and reported
    e.g. If there are 50 'slow request ' logs in the 10 minute interval which are for a primary OSD, then 50 is reported
         If there are 50 'slow request ' logs 'waiting for subop', then the OSDs called out by the subop (comma
         separated numbers), are all counted in the 'Slow SubOp' line.  For 3x replication, and 50 lines, the reported 
         number would be 100 (due to 2x non-primary copies * 50 lines)
+
+ * NOTE: Slow request processing has changed as of 27 Feb 2018. The intial slow request (delay < 60 seconds) and
+         relogged slow requests ( delay>60 seconds ) are logged separately to better understand if an issue is ongoing.
+
 
 ##### ATTENTION:
 - This command output among all others really should be looked at in a spreadsheet tool.  I typically highlight the headers (at the top of each section), bold them, rotate them so the text is vertical, then auto-adjust the column widths to get a more concise view which is much easier to visually parse.  Graphing of the data in this report can also make trends stand out and help with reducing the scope for hunting faulting components.
