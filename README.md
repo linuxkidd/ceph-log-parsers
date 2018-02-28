@@ -36,14 +36,17 @@ NOTE: I've shortened the sample outputs below with elipses for the sake of brevi
 
  * For items which are average, these are summed and averaged over the measurement interval
    The measurement is reported at the beginning of the interval measurement period
+
    e.g IO: Client Read MB/s for 03:30 to 03:40 is averaged, then reported on the 03:30 line
 
  * For items which are a static snapshot, these are reported based on the last line containing those
    details in the log before the end of the measurement interval
+
    e.g. PG: active for 03:30 to 03:40 - If a pgmap is found at 03:39:59, that will be the one reported for
         the 03:30 line
 
  * For items like the Slow requests, the count of those entries is summed during the measured period and reported
+
    e.g. If there are 50 'slow request ' logs in the 10 minute interval which are for a primary OSD, then 50 is reported
         If there are 50 'slow request ' logs 'waiting for subop', then the OSDs called out by the subop (comma
         separated numbers), are all counted in the 'Slow SubOp' line.  For 3x replication, and 50 lines, the reported 
