@@ -30,24 +30,24 @@ BEGIN {
     next
   }
 
-    if(MYSTART!="") {
-      mydiff=MYTIME-MYSTART
-      if(mydiff<mymin || mymin=="") {
-        myminreq=MYLINE
-        mymin=mydiff
-      }
-      if(mydiff>mymax || mymin=="") {
-        mymaxreq=MYLINE
-        mymax=mydiff
-      }
-      mysum+=mydiff
-      mycount++
-      printf("%s,%s\n", mydiff, MYLINE)
-      MYSTART=""
+  if(MYSTART!="") {
+    mydiff=MYTIME-MYSTART
+    if(mydiff<mymin || mymin=="") {
+      myminreq=MYLINE
+      mymin=mydiff
     }
+    if(mydiff>mymax || mymin=="") {
+      mymaxreq=MYLINE
+      mymax=mydiff
+    }
+    mysum+=mydiff
+    mycount++
+    printf("%s,%s\n", mydiff, MYLINE)
+    MYSTART=""
+  }
 }
 END {
   if(mycount=="")
     mycount=1
-  printf("Min,Avg,Max,Total Time Spent,%Time spent in compaction\n%s,%s,%s,%s,%s\nMin Req: %s\nMax Req: %s\n",mymin,mysum/mycount,mymax,mysum,mysum/(endtime-begtime),myminreq,mymaxreq)
+  printf("Min,Avg,Max,Total Time Spent,%Time spent in compaction\n%s,%s,%s,%s,%s\nMin Req: %s\nMax Req: %s\n",mymin,mysum/mycount,mymax,mysum,mysum/(endtime-begtime)*100,myminreq,mymaxreq)
 }
