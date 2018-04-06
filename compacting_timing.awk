@@ -5,6 +5,11 @@
 ## ./compacting_timing.awk ceph-osd.10.log
 ##
 ##
+
+BEGIN {
+  begtime=0
+  endtime=0
+}
 /leveldb: Compact/ {
   MYLINE=$0
   gsub(/[-:]/," ",$1)
@@ -14,6 +19,12 @@
   millisecs=sprintf("0.%s",secs[2])
   MYTIME+=millisecs
 
+  if(begtime==0) {
+    begtime=MYTIME
+  }
+  if(MYTIME>endtime) {
+    endtime=MYTIME
+  }
   if($6=="Compacting") {
     MYSTART=MYTIME
     next
@@ -38,5 +49,5 @@
 END {
   if(mycount=="")
     mycount=1
-  printf("Min,Avg,Max,Total Time Spent\n%s,%s,%s,%s\nMin Req: %s\nMax Req: %s\n",mymin,mysum/mycount,mymax,mysum,myminreq,mymaxreq)
+  printf("Min,Avg,Max,Total Time Spent,%Time spent in compaction\n%s,%s,%s,%s,%s\nMin Req: %s\nMax Req: %s\n",mymin,mysum/mycount,mymax,mysum,mysum/(endtime-begtime),myminreq,mymaxreq)
 }
