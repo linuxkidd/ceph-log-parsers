@@ -38,5 +38,5 @@
 END {
   if(mycount=="")
     mycount=1
-  printf("Min,Avg,Max\n%s,%s,%s\nMin Req: %s\nMax Req: %s\n",mymin,mysum/mycount,mymax,myminreq,mymaxreq)
+  printf("Min,Avg,Max,Total Time Spent\n%s,%s,%s,%s\nMin Req: %s\nMax Req: %s\n",mymin,mysum/mycount,mymax,mysum,myminreq,mymaxreq)
 }
