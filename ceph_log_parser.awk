@@ -366,7 +366,7 @@ BEGIN {
   if ($0 ~ /subops from/) {
     split($NF,subosds,",")
     for (subosd in subosds) {
-      subosd="osd."subosd
+      subosd="osd."subosds[subosd]
       if($11 < 60) {
         myeventstring="Slow SubOp,Slow Total"
         osdhistoevent(MYDTSTAMP,subosd,"inc")
