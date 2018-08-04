@@ -8,6 +8,13 @@
 #
 ###
 
+function safediv(a,b) {
+  if(b==0) {
+    return 0
+  } else {
+    return a/b
+  }
+}
 
 /deep-scrub/ {
   MYLINE=$0
@@ -40,5 +47,5 @@
   }
 }
 END {
-  printf("Min,Avg,Max\n%s,%s,%s\nMin Req: %s\nMax Req: %s\n",mymin,mysum/mycount,mymax,myminreq,mymaxreq)
+  printf("Min,Avg,Max\n%s,%s,%s\nMin Req: %s\nMax Req: %s\n",mymin,safediv(mysum,mycount),mymax,myminreq,mymaxreq)
 }
