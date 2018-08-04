@@ -189,50 +189,6 @@ Max Req: 2018-01-17 01:13:12.793967 osd.131 10.129.152.23:6814/3605203 3452 : cl
 18,173
 ```
 
-#### map_events_to_buckets.sh
-- Provide a 'ceph.log' and the text file output of 'ceph osd tree' and this script will output a count of slow requests (local, subop and total),'failed', 'boot' and 'wrongly marked me down' entries mapped to the leaf / buckets to which they were reported against.
-
-###### Example:
-```
-# ceph osd tree > ceph_osd_tree.txt
-# ./map_events_to_buckets.sh ceph.log ceph_osd_tree.txt > events.csv
-Searching for... slow, subops, failed, boot, wrongly marked down
-
-# cat events.csv
-
-buckets...,slow primary,slow subop, total slow,failed,boot,wrongly down
-default,rack1,ceph-storage-003,osd.0,775,398,1173,174,174,176
-default,rack1,ceph-storage-003,osd.6,725,171,896,175,176,176
-default,rack1,ceph-storage-003,osd.10,618,352,970,177,177,179
-default,rack1,ceph-storage-003,osd.15,578,829,1407,175,175,176
-...
-default,rack1,ceph-storage-003,6831,3842,10673,1741,1742,1750,
-default,rack1,ceph-storage-004,osd.423,783,397,1180,174,174,175
-default,rack1,ceph-storage-004,osd.425,882,517,1399,171,171,171
-default,rack1,ceph-storage-004,osd.427,784,795,1579,177,177,177
-default,rack1,ceph-storage-004,osd.429,715,327,1042,169,169,167
-...
-default,rack1,ceph-storage-004,7238,6809,14047,1725,1726,1727,
-...
-default,rack1,86695,83655,170350,13597,13621,13669,
-default,rack2,ceph-storage-020,osd.149,720,573,1293,172,172,172
-default,rack2,ceph-storage-020,osd.153,913,140,1053,170,170,175
-default,rack2,ceph-storage-020,osd.158,1107,487,1594,170,171,173
-default,rack2,ceph-storage-020,osd.163,989,248,1237,170,170,170
-...
-default,rack2,ceph-storage-020,7801,3220,11021,1711,1714,1720,
-default,rack2,ceph-storage-021,osd.150,552,178,730,0,0,0
-default,rack2,ceph-storage-021,osd.154,820,738,1558,0,0,0
-default,rack2,ceph-storage-021,osd.159,0,0,0,0,0,0
-....
-default,rack2,ceph-storage-021,5093,3466,8559,0,0,0,
-...
-default,rack2,97265,87545,184810,11958,11968,12038,
-...
-default,rack3,154202,58709,212911,2357,2357,2365,
-default,338162,229909,568071,27912,27946,28072,
-```
-
 #### map_reporters_to_buckets.sh
 - Provide with a ceph-mon.log and text output file from 'ceph osd tree' and this script will generate a mapping of 'reported failed' (reported and reporters) counts as a result.
 
