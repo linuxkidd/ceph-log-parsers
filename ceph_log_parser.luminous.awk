@@ -238,10 +238,11 @@ BEGIN {
         histoevent(MYDTSTAMP,"HOSTs down","set",hostparts[1])
         break
       case /Reduced data availability: /:
-        split(mylineparts[linepartindex],reducedA,": ")
-        split(reducedA[2],reduced,",")
-        for(field in reduced) {
-          split(field,fparts," ")
+      case /Possible data damage: /:
+        split(mylineparts[linepartindex],linepartA,":")
+        split(linepartA[2],linepartB,",")
+        for(field in linepartB) {
+          split(linepartB[field],fparts," ")
           myevent="PG: "fparts[3]
           histoevent(MYDTSTAMP,myevent,"set",fparts[1])
         }
@@ -250,11 +251,12 @@ BEGIN {
         split(mylineparts[linepartindex],linepartA,":")
         split(linepartA[2],linepartB,",")
         for(field in linepartB) {
-          if(field ~ /objects degraded/) {
-            gsub(/[^0-9\.]/,"",linepartB[1])
-            histoevent(MYDTSTAMP,"Objects: Degraded Percent","set",linepartB[1])
+          if(linepartB[field] ~ /objects degraded/) {
+            split(linepartB[field],linepartC," ")
+            gsub(/[^0-9\.]/,"",linepartC[4])
+            histoevent(MYDTSTAMP,"Objects: Degraded Percent","set",linepartC[4])
           } else {
-            split(field,fparts," ")
+            split(linepartB[field],fparts," ")
             myevent="PG: "fparts[3]
             histoevent(MYDTSTAMP,myevent,"set",fparts[1])
           }
@@ -329,13 +331,13 @@ BEGIN {
     split(temppgid[1],pgid,".")
   }
  
-  if ($0 ~ /sub_op_/) {
-    MYTYPE=$0
-    gsub(/^.* currently /,"Slow SubOp: ",MYTYPE)
-    gsub(/ [0-9]*$/,"",MYTYPE)
+  if ($0 ~ / subops /) {
+    split($0,junk," currently ")
+    MYTYPE="Slow SubOp: "junk[2]
+    gsub(/ [0-9,]*$/,"",MYTYPE)
     split($NF,subosds,",")
     for (subosd in subosds) {
-      subosd="osd."subosd
+      subosd="osd."subosds[subosd]
       if($12 < 60) {
         myeventstring="Slow SubOp,Slow Total,"MYTYPE
         osdhistoevent(MYDTSTAMP,subosd,"inc")
@@ -353,8 +355,9 @@ BEGIN {
       }
     }
   } else {
-    MYTYPE=$0
-    gsub(/^.* currently /,"Slow Primary: ",MYTYPE)
+    split($0,junk," currently ")
+    MYTYPE="Slow Primary: "junk[2]
+    gsub(/ from [0-9]*/,"",MYTYPE)
     if($12 < 60) {
       myeventstring="Slow Primary,Slow Total,"MYTYPE
       osdhistoevent(MYDTSTAMP,$3,"inc")
