@@ -365,8 +365,8 @@ BEGIN {
  
   if ($0 ~ /subops from/) {
     split($NF,subosds,",")
-    for (subosd in subosds) {
-      subosd="osd."subosds[subosd]
+    for (subosdidx in subosds) {
+      subosd="osd."subosds[subosdidx]
       if($11 < 60) {
         myeventstring="Slow SubOp,Slow Total"
         osdhistoevent(MYDTSTAMP,subosd,"inc")
@@ -385,7 +385,8 @@ BEGIN {
     }
   } else {
     MYTYPE=$0
-    gsub(/^.* currently /,"Slow Primary: ",MYTYPE)
+    mytpartcount=split($0,mytparts," currently ")
+    MYTYPE="Slow Primary: "mytparts[mytpartcount]
     if($11 < 60) {
       myeventstring="Slow Primary,Slow Total,"MYTYPE
       osdhistoevent(MYDTSTAMP,$3,"inc")
@@ -429,7 +430,7 @@ BEGIN {
   osdtotal(MYEVENT,1)
 }
 
-/ marked itself down / {
+/ marked itself down/ {
   MYDTSTAMP=mydtstamp($1" "$2)
   MYEVENT="OSD Down: Self"
   histoevent(MYDTSTAMP,MYEVENT,"inc")
