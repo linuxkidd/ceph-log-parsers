@@ -218,6 +218,26 @@ BEGIN {
   }
 }
 
+/ HEALTH_/ {
+  MYDTSTAMP=mydtstamp($1" "$2)
+  myline=$0
+  gsub(";","",$9)
+  histoevent(MYDTSTAMP,$9,"inc")
+  myeventadd=0
+  split(myline,mylineparts,"; ")
+  
+  for(linepartindex in mylineparts) {
+    if(mylineparts[linepartindex] ~ /flag\(s\) set/) {
+      split(mylineparts[linepartindex],linespaced," ")
+      split(linespaced[1],flags," ")
+      for(flagidx in flags) {
+        histoevent(MYDTSTAMP,"Flag: "flags[flagidx],"inc")
+      }
+    }
+  }
+  
+}
+
 / pgmap / {
   MYDTSTAMP=mydtstamp($1" "$2)
   myline=$0
@@ -280,8 +300,7 @@ BEGIN {
               myeventadd=mycliparts[1]
               myeventcount="Client IOPsCount"
           }
-          EVENTHEADERS[myeventname]=1
-          EVENTCOUNT[MYDTSTAMP][myeventname]=sprintf("%0.2f",((EVENTCOUNT[MYDTSTAMP][myeventname]*EVENTCOUNT[MYDTSTAMP][myeventcount])+myeventadd)/(EVENTCOUNT[MYDTSTAMP][myeventcount]+1))
+          histoevent(MYDTSTAMP,myeventname,"set",sprintf("%0.2f",((EVENTCOUNT[MYDTSTAMP][myeventname]*EVENTCOUNT[MYDTSTAMP][myeventcount])+myeventadd)/(EVENTCOUNT[MYDTSTAMP][myeventcount]+1)))
           EVENTCOUNT[MYDTSTAMP][myeventcount]++
         }
         break
@@ -300,9 +319,8 @@ BEGIN {
         myeventcount="RecoveryCount"
         split(mylineparts[linepartindex],reclineparts," ")
         myeventadd=toMB(reclineparts[1],reclineparts[2])
-        EVENTCOUNT[MYDTSTAMP][myeventname]=sprintf("%0.2f",((EVENTCOUNT[MYDTSTAMP][myeventname]*EVENTCOUNT[MYDTSTAMP][myeventcount])+myeventadd)/(EVENTCOUNT[MYDTSTAMP][myeventcount]+1))
+        histoevent(MYDTSTAMP,myeventname,"set",sprintf("%0.2f",((EVENTCOUNT[MYDTSTAMP][myeventname]*EVENTCOUNT[MYDTSTAMP][myeventcount])+myeventadd)/(EVENTCOUNT[MYDTSTAMP][myeventcount]+1)))
         EVENTCOUNT[MYDTSTAMP][myeventcount]++
-        EVENTHEADERS[myeventname]=1
         break
     }
   }
