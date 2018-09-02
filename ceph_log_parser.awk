@@ -229,7 +229,7 @@ BEGIN {
   for(linepartindex in mylineparts) {
     if(mylineparts[linepartindex] ~ /flag\(s\) set/) {
       split(mylineparts[linepartindex],linespaced," ")
-      split(linespaced[1],flags," ")
+      split(linespaced[1],flags,",")
       for(flagidx in flags) {
         histoevent(MYDTSTAMP,"Flag: "flags[flagidx],"inc")
       }
