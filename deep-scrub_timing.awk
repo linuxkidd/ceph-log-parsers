@@ -4,7 +4,12 @@
 #
 # Pipe a 'ceph.log' file into the script, redirect the output to a .csv file
 #
-# cat ceph.log | deep-scrub_histo.awk > deep-scrub_histo.awk
+# cat ceph.log | deep-scrub_histo.awk > deep-scrub_histo.csv
+#
+# Added ability to map acting OSDs to the PG scrub line
+#
+# Example:
+# cat ceph.log | deep-scrub_histo.awk -v pgdump=/path/to/pgdump > deep-scrub_histo.csv
 #
 ###
 
@@ -13,6 +18,18 @@ function safediv(a,b) {
     return 0
   } else {
     return a/b
+  }
+}
+
+BEGIN {
+  if(pgdump != "") {
+    while(( getline line<pgdump ) > 0) {
+      split(line,a," ")
+      if(a[1] ~ /[0-9]*\.[0-9a-f]*/)
+        gsub(/[\[\]]/, "", a[15])
+        gsub(/,/, ",osd.", a[15])
+        PGsToOSD[a[1]]="osd."a[15]
+    }
   }
 }
 
@@ -43,7 +60,7 @@ function safediv(a,b) {
     }
     mysum+=mydiff
     mycount++
-    printf("%s,%s\n", mydiff, MYLINE)
+    printf("%s,%s,%s\n", mydiff,PGsToOSD[MYPG],MYLINE)
   }
 }
 END {
